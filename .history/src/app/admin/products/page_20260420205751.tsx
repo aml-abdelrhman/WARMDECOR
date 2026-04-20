@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+
+ import { useForm, type SubmitHandler } from "react-hook-form";
 import { useForm, type SubmitHandler, type FieldValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -26,6 +28,7 @@ const ProductSchema = z.object({
   active: z.boolean().default(true),
 });
 
+interface ProductFormData {
 type ProductFormData = {
   title: string;
   price: number;
@@ -34,6 +37,7 @@ type ProductFormData = {
   category: string;
   brand: string;
   active: boolean;
+}
 };
 
 // type ProductFormData = z.infer<typeof ProductSchema>;
@@ -106,6 +110,7 @@ const onSubmit: SubmitHandler<ProductFormData> = (data) => {
         </div>
 
         {/* Form */}
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="p-6 space-y-4">
         <form onSubmit={handleSubmit(onSubmit as any)} noValidate className="p-6 space-y-4">
 
           {/* Title */}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, type SubmitHandler, type FieldValues } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import toast from "react-hot-toast";
@@ -17,6 +17,13 @@ import { formatPrice, cn } from "@/lib/utils";
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
 const ProductSchema = z.object({
+  title:               z.string().min(3,  "Title must be at least 3 characters"),
+  price:               z.coerce.number().positive("Price must be positive").pipe(z.number()),
+  priceAfterDiscount:  z.coerce.number().optional().pipe(z.number().optional()),
+  quantity:            z.coerce.number().int().min(0, "Quantity cannot be negative").pipe(z.number()),
+  category:            z.string().min(2,  "Category is required"),
+  brand:               z.string().min(1,  "Brand is required"),
+  active:              z.boolean(),
   title: z.string().min(3, "Title must be at least 3 characters"),
   price: z.coerce.number().min(1, "Price must be positive"),
   priceAfterDiscount: z.union([z.coerce.number(), z.undefined(), z.null(), z.literal("")]).optional().transform(v => (v === "" || v === null) ? undefined : Number(v)),
@@ -26,7 +33,8 @@ const ProductSchema = z.object({
   active: z.boolean().default(true),
 });
 
-type ProductFormData = {
+type ProductFormData = z.infer<typeof ProductSchema>;
+interface ProductFormData {
   title: string;
   price: number;
   priceAfterDiscount?: number;
@@ -34,8 +42,9 @@ type ProductFormData = {
   category: string;
   brand: string;
   active: boolean;
-};
+}
 
+type SortField = "title" | "price" | "quantity" | "sold";
 // type ProductFormData = z.infer<typeof ProductSchema>;
 // or they are optional. For `addProduct`, you're adding them manually.
 type SortField = "title" | "price" | "quantity" | "sold" | "ratingsAverage"; // Added ratingsAverage as a sortable field
@@ -55,6 +64,24 @@ function ProductModal({
   const [saving, setSaving] = useState(false);
   const isEdit = !!initial;
 
+ const {
+  register,
+  handleSubmit,
+  formState: { errors },
+} = useForm<ProductFormData>({
+  resolver: zodResolver(ProductSchema),
+  defaultValues: initial
+    ? {
+        title: initial.title,
+        price: initial.price,
+        priceAfterDiscount: initial.priceAfterDiscount,
+        quantity: initial.quantity,
+        category: initial.category,
+        brand: initial.brand,
+        active: initial.active,
+      }
+    : { active: true, quantity: 0 },
+});
   const {
     register,
     handleSubmit,
@@ -106,7 +133,7 @@ const onSubmit: SubmitHandler<ProductFormData> = (data) => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit as any)} noValidate className="p-6 space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="p-6 space-y-4">
 
           {/* Title */}
           <Field label="Product Title" error={errors.title?.message}>

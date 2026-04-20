@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, type SubmitHandler, type FieldValues } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import toast from "react-hot-toast";
@@ -16,27 +16,24 @@ import { formatPrice, cn } from "@/lib/utils";
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
+// تأكد أن السكيما مكتوبة هكذا
 const ProductSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
-  price: z.coerce.number().min(1, "Price must be positive"),
-  priceAfterDiscount: z.union([z.coerce.number(), z.undefined(), z.null(), z.literal("")]).optional().transform(v => (v === "" || v === null) ? undefined : Number(v)),
+  price: z.coerce.number().positive("Price must be positive"),
+  priceAfterDiscount: z.preprocess(
+    (val) => (val === "" || val === null ? undefined : val),
+    z.coerce.number().min(0).optional() // تأكد من وجود .optional()
+  ),
   quantity: z.coerce.number().int().min(0, "Quantity cannot be negative"),
   category: z.string().min(2, "Category is required"),
   brand: z.string().min(1, "Brand is required"),
-  active: z.boolean().default(true),
+  active: z.boolean(),
 });
 
-type ProductFormData = {
-  title: string;
-  price: number;
-  priceAfterDiscount?: number;
-  quantity: number;
-  category: string;
-  brand: string;
-  active: boolean;
-};
+// استنتج النوع من السكيما مباشرة
 
-// type ProductFormData = z.infer<typeof ProductSchema>;
+type ProductFormData = z.infer<typeof ProductSchema>;
+// The `Product` type from "@/types" is likely missing `imageCover` and `ratingsAverage`
 // or they are optional. For `addProduct`, you're adding them manually.
 type SortField = "title" | "price" | "quantity" | "sold" | "ratingsAverage"; // Added ratingsAverage as a sortable field
 type SortDir   = "asc" | "desc";
@@ -55,25 +52,25 @@ function ProductModal({
   const [saving, setSaving] = useState(false);
   const isEdit = !!initial;
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ProductFormData>({
-    // @ts-ignore - Explicitly bypass internal resolver type mismatch if library is corrupted
-    resolver: zodResolver(ProductSchema),
-    defaultValues: initial
-      ? {
-          title: initial.title,
-          price: initial.price,
-          priceAfterDiscount: initial.priceAfterDiscount ?? undefined,
-          quantity: initial.quantity,
-          category: initial.category,
-          brand: initial.brand,
-          active: initial.active,
-        }
-      : { active: true, quantity: 0, title: "", price: 0, category: "", brand: "", priceAfterDiscount: undefined },
-  });
+ const {
+  register,
+  handleSubmit,
+  formState: { errors },
+} = useForm<ProductFormData>({
+  resolver: zodResolver(ProductSchema),
+  defaultValues: initial
+    ? {
+        title: initial.title,
+        price: initial.price,
+        priceAfterDiscount: initial.priceAfterDiscount,
+        quantity: initial.quantity,
+        category: initial.category,
+        brand: initial.brand,
+        active: initial.active,
+        
+      }
+    : { active: true, quantity: 0, title: "", price: 0, category: "", brand: "", priceAfterDiscount: undefined }, // Ensure all fields are present, even if undefined
+});
 
 const onSubmit: SubmitHandler<ProductFormData> = (data) => {
   setSaving(true);
@@ -106,7 +103,7 @@ const onSubmit: SubmitHandler<ProductFormData> = (data) => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit as any)} noValidate className="p-6 space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="p-6 space-y-4">
 
           {/* Title */}
           <Field label="Product Title" error={errors.title?.message}>

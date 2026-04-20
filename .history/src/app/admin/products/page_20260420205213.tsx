@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, type SubmitHandler, type FieldValues } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import toast from "react-hot-toast";
@@ -26,7 +26,7 @@ const ProductSchema = z.object({
   active: z.boolean().default(true),
 });
 
-type ProductFormData = {
+interface ProductFormData {
   title: string;
   price: number;
   priceAfterDiscount?: number;
@@ -34,7 +34,7 @@ type ProductFormData = {
   category: string;
   brand: string;
   active: boolean;
-};
+}
 
 // type ProductFormData = z.infer<typeof ProductSchema>;
 // or they are optional. For `addProduct`, you're adding them manually.
@@ -106,7 +106,7 @@ const onSubmit: SubmitHandler<ProductFormData> = (data) => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit as any)} noValidate className="p-6 space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="p-6 space-y-4">
 
           {/* Title */}
           <Field label="Product Title" error={errors.title?.message}>

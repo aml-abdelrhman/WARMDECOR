@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+
 import { useRef } from "react";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -80,13 +80,13 @@ export function ProductSwiper({
           spaceBetween={20}
           slidesPerView={1.2}
           navigation={{
-            prevEl: ".swiper-button-prev-custom",
-            nextEl: ".swiper-button-next-custom",
+            prevEl: prevRef.current,
+            nextEl: nextRef.current,
           }}
           onBeforeInit={(swiper) => {
-            // @ts-ignore
+            // @ts-expect-error Swiper internal navigation assignment
             swiper.params.navigation.prevEl = prevRef.current;
-            // @ts-ignore
+            // @ts-expect-error Swiper internal navigation assignment
             swiper.params.navigation.nextEl = nextRef.current;
           }}
           breakpoints={{

@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Star, Quote, User, Calendar } from "lucide-react";
+import axios from "axios";
 import { apiClient } from "@/lib/axios";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +18,8 @@ interface Review {
 }
 
 const getAllReviews = async () => {
+  const { data } = await axios.get("https://ecommerce.routemisr.com/api/v1/reviews");
+  return data.data; // تأكد من مسار البيانات حسب الـ API
   const { data } = await apiClient.get("/reviews");
   return data.data;
 };

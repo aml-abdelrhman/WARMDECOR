@@ -32,18 +32,18 @@ const monoFont = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default:  "WARMDECOR — Curated Minimalist Living",
-    template: "%s | WARMDECOR",
+    default:  "ShopZone — Discover. Shop. Enjoy.",
+    template: "%s | ShopZone",
   },
   description:
-    "Elevating your living space with curated minimalist pieces that blend timeless elegance with modern comfort.",
-  keywords: ["decor", "interior design", "minimalist", "egypt", "furniture"],
-  authors:  [{ name: "WARMDECOR Team" }],
+    "ShopZone is your one-stop destination for electronics, fashion, home goods and more — with fast delivery across Egypt.",
+  keywords: ["ecommerce", "shopping", "egypt", "electronics", "fashion"],
+  authors:  [{ name: "ShopZone Team" }],
   icons:    { icon: "/favicon.ico" },
   openGraph: {
     type:        "website",
-    siteName:    "WARMDECOR",
-    title:       "WARMDECOR — Curated Minimalist Living",
+    siteName:    "ShopZone",
+    title:       "ShopZone — Discover. Shop. Enjoy.",
     description: "Your one-stop destination for everything you love.",
   },
 };
@@ -76,7 +76,7 @@ export default function RootLayout({
           toastOptions={{
             duration: 3000,
             style: {
-              background:   "#5C3D23",
+              background:   "#0f172a",
               color:        "#f8fafc",
               borderRadius: "12px",
               fontSize:     "13px",
