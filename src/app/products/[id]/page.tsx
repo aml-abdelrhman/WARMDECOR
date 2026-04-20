@@ -184,11 +184,13 @@ export default function ProductDetailPage() {
     : 0;
 
   const wishlistedIds = new Set(
-    wishlistData?.data?.map((item: any) => item.product?._id || item._id) || [],
+    wishlistData?.data?.map((item: { _id: string; product?: { _id: string } }) => item.product?._id || item._id) || [],
   );
 
   const cartIds = new Set(
-    cartData?.data?.products?.map((item: any) => item.product?._id || item.product) || [],
+    cartData?.data?.products?.map((item: { product: string | { _id: string } }) => 
+      typeof item.product === 'string' ? item.product : item.product?._id
+    ) || [],
   );
 
   const relatedProducts = (relatedData?.data ?? [])

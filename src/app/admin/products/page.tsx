@@ -60,7 +60,6 @@ function ProductModal({
     handleSubmit,
     formState: { errors },
   } = useForm<ProductFormData>({
-    // @ts-ignore - Explicitly bypass internal resolver type mismatch if library is corrupted
     resolver: zodResolver(ProductSchema),
     defaultValues: initial
       ? {
@@ -106,7 +105,7 @@ const onSubmit: SubmitHandler<ProductFormData> = (data) => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit as any)} noValidate className="p-6 space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="p-6 space-y-4">
 
           {/* Title */}
           <Field label="Product Title" error={errors.title?.message}>

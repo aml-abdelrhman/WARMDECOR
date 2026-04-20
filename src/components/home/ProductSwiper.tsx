@@ -84,9 +84,9 @@ export function ProductSwiper({
             nextEl: ".swiper-button-next-custom",
           }}
           onBeforeInit={(swiper) => {
-            // @ts-ignore
+            // @ts-expect-error
             swiper.params.navigation.prevEl = prevRef.current;
-            // @ts-ignore
+            // @ts-expect-error
             swiper.params.navigation.nextEl = nextRef.current;
           }}
           breakpoints={{
