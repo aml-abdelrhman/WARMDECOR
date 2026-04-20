@@ -136,48 +136,6 @@ export default function ProductDetailPage() {
     enabled: isAuthenticated,
   });
 
-  // ── Derived ──
-
-  const images = useMemo(() => 
-    product 
-      ? [product.imageCover, ...(product.images ?? [])].filter(Boolean)
-      : [], 
-    [product]
-  );
-
-  const hasDiscount =
-    product &&
-    product.priceAfterDiscount !== undefined &&
-    product.priceAfterDiscount < product.price;
-
-  const displayPrice = hasDiscount
-    ? product?.priceAfterDiscount!
-    : product?.price ?? 0;
-
-  const discountPct = hasDiscount
-    ? calcDiscountPct(product!.price, product!.priceAfterDiscount!)
-    : 0;
-
-  const wishlistedIds = useMemo(() => 
-    new Set(
-      wishlistData?.data?.map((item: { _id: string; product?: { _id: string } }) => item.product?._id || item._id) || []
-    ), [wishlistData?.data]
-  );
-
-  const cartIds = useMemo(() => 
-    new Set(
-      cartData?.data?.products?.map((item: { product: string | { _id: string } }) => 
-        typeof item.product === 'string' ? item.product : item.product?._id
-      ) || []
-    ), [cartData?.data?.products]
-  );
-
-  const relatedProducts = useMemo(() => 
-    (relatedData?.data ?? [])
-      .filter((p) => p._id !== product?._id)
-      .slice(0, 4), [relatedData?.data, product?._id]
-  );
-
   // ── Guards ──
 
   if (loadingProduct)
@@ -206,6 +164,46 @@ export default function ProductDetailPage() {
         </div>
       </div>
     );
+
+  // ── Derived ──
+
+  const images = useMemo(() => 
+    [product.imageCover, ...(product.images ?? [])].filter(
+      Boolean,
+    ), [product.imageCover, product.images]
+  );
+
+  const hasDiscount =
+    product.priceAfterDiscount !== undefined &&
+    product.priceAfterDiscount < product.price;
+
+  const displayPrice = hasDiscount
+    ? product.priceAfterDiscount!
+    : product.price;
+
+  const discountPct = hasDiscount
+    ? calcDiscountPct(product.price, product.priceAfterDiscount!)
+    : 0;
+
+  const wishlistedIds = useMemo(() => 
+    new Set(
+      wishlistData?.data?.map((item: { _id: string; product?: { _id: string } }) => item.product?._id || item._id) || []
+    ), [wishlistData?.data]
+  );
+
+  const cartIds = useMemo(() => 
+    new Set(
+      cartData?.data?.products?.map((item: { product: string | { _id: string } }) => 
+        typeof item.product === 'string' ? item.product : item.product?._id
+      ) || []
+    ), [cartData?.data?.products]
+  );
+
+  const relatedProducts = useMemo(() => 
+    (relatedData?.data ?? [])
+      .filter((p) => p._id !== product._id)
+      .slice(0, 4), [relatedData?.data, product._id]
+  );
 
   // ── Handlers ──
 

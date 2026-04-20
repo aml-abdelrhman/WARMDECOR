@@ -136,9 +136,41 @@ export default function ProductDetailPage() {
     enabled: isAuthenticated,
   });
 
+  // ── Guards ──
+
+  if (loadingProduct)
+    return (
+      <div className="min-h-screen bg-[#F9F5F0]">
+        <DetailSkeleton />
+      </div>
+    );
+
+  if (isError || !product)
+    return (
+      <div className="min-h-screen bg-[#F9F5F0] flex items-center justify-center">
+        <div className="text-center animate-fade-in">
+          <p className="text-2xl font-display font-bold text-[#5C3D23] mb-2">
+            Product not found
+          </p>
+          <p className="text-[#7B5235]/70 text-sm mb-6">
+            This product may have been removed.
+          </p>
+          <Link
+            href={ROUTES.products}
+            className="text-sm font-semibold text-[#7B5235] hover:text-[#5C3D23] transition-colors"
+          >
+            ← Back to products
+          </Link>
+        </div>
+      </div>
+    );
+
   // ── Derived ──
 
   const images = useMemo(() => 
+    [product.imageCover, ...(product.images ?? [])].filter(
+      Boolean,
+    ), [product.imageCover, product.images]
     product 
       ? [product.imageCover, ...(product.images ?? [])].filter(Boolean)
       : [], 
@@ -151,10 +183,13 @@ export default function ProductDetailPage() {
     product.priceAfterDiscount < product.price;
 
   const displayPrice = hasDiscount
+    ? product.priceAfterDiscount!
+    : product.price;
     ? product?.priceAfterDiscount!
     : product?.price ?? 0;
 
   const discountPct = hasDiscount
+    ? calcDiscountPct(product.price, product.priceAfterDiscount!)
     ? calcDiscountPct(product!.price, product!.priceAfterDiscount!)
     : 0;
 
@@ -174,6 +209,8 @@ export default function ProductDetailPage() {
 
   const relatedProducts = useMemo(() => 
     (relatedData?.data ?? [])
+      .filter((p) => p._id !== product._id)
+      .slice(0, 4), [relatedData?.data, product._id]
       .filter((p) => p._id !== product?._id)
       .slice(0, 4), [relatedData?.data, product?._id]
   );
