@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useState, useMemo } from "react";
 import { useForm, type SubmitHandler} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -258,6 +259,16 @@ export default function AdminProductsPage() {
 
   // ── Filter + sort ──
 
+  const filtered = products
+    .filter((p) =>
+      p.title.toLowerCase().includes(search.toLowerCase()) ||
+      p.category.toLowerCase().includes(search.toLowerCase()) ||
+      p.brand.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => {
+      const aVal = a[sortField] ?? 0;
+      const bVal = b[sortField] ?? 0;
+      if (typeof aVal === "string" && typeof bVal === "string") {
   const filtered = useMemo(() => {
     return products
       .filter((p) =>
@@ -274,6 +285,13 @@ export default function AdminProductsPage() {
             : bVal.localeCompare(aVal);
         }
         return sortDir === "asc"
+          ? aVal.localeCompare(bVal)
+          : bVal.localeCompare(aVal);
+      }
+      return sortDir === "asc"
+        ? (aVal as number) - (bVal as number)
+        : (bVal as number) - (aVal as number);
+    });
           ? (aVal as number) - (bVal as number)
           : (bVal as number) - (aVal as number);
       });

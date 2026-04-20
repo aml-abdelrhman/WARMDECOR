@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = 'force-dynamic';
 import { useState, useCallback, useEffect, useMemo, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams, useRouter } from "next/navigation";

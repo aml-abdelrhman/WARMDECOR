@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -167,10 +167,8 @@ export default function ProductDetailPage() {
 
   // ── Derived ──
 
-  const images = useMemo(() => 
-    [product.imageCover, ...(product.images ?? [])].filter(
-      Boolean,
-    ), [product.imageCover, product.images]
+  const images = [product.imageCover, ...(product.images ?? [])].filter(
+    Boolean,
   );
 
   const hasDiscount =
@@ -185,25 +183,19 @@ export default function ProductDetailPage() {
     ? calcDiscountPct(product.price, product.priceAfterDiscount!)
     : 0;
 
-  const wishlistedIds = useMemo(() => 
-    new Set(
-      wishlistData?.data?.map((item: { _id: string; product?: { _id: string } }) => item.product?._id || item._id) || []
-    ), [wishlistData?.data]
+  const wishlistedIds = new Set(
+    wishlistData?.data?.map((item: { _id: string; product?: { _id: string } }) => item.product?._id || item._id) || [],
   );
 
-  const cartIds = useMemo(() => 
-    new Set(
-      cartData?.data?.products?.map((item: { product: string | { _id: string } }) => 
-        typeof item.product === 'string' ? item.product : item.product?._id
-      ) || []
-    ), [cartData?.data?.products]
+  const cartIds = new Set(
+    cartData?.data?.products?.map((item: { product: string | { _id: string } }) => 
+      typeof item.product === 'string' ? item.product : item.product?._id
+    ) || [],
   );
 
-  const relatedProducts = useMemo(() => 
-    (relatedData?.data ?? [])
-      .filter((p) => p._id !== product._id)
-      .slice(0, 4), [relatedData?.data, product._id]
-  );
+  const relatedProducts = (relatedData?.data ?? [])
+    .filter((p) => p._id !== product._id)
+    .slice(0, 4);
 
   // ── Handlers ──
 
