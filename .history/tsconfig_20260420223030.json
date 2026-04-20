@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0", // السطر ده هيشيل التحذير
+    "baseUrl": ".", 
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    // بقية الإعدادات...
+  }
+}
