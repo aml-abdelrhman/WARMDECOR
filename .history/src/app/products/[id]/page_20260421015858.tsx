@@ -117,14 +117,13 @@ export default function ProductDetailPage() {
     enabled: !!id,
   });
 
-const { data: relatedData } = useQuery({
+  const { data: relatedData } = useQuery({
     queryKey: QUERY_KEYS.productsByCategory(product?.category._id ?? ""),
     queryFn: () =>
-      getProductsApi({ category: product?.category._id ?? "", limit: 5 }),
+      getProductsApi({ category: product!.category._id, limit: 5 }),
     enabled: !!product?.category._id,
     staleTime: 5 * 60 * 1000,
   });
-
   const { data: wishlistData } = useQuery({
     queryKey: ["wishlist"],
     queryFn: getWishlistApi,
@@ -151,12 +150,12 @@ const { data: relatedData } = useQuery({
     product.priceAfterDiscount !== undefined &&
     product.priceAfterDiscount < product.price;
 
- const displayPrice = hasDiscount
-    ? product?.priceAfterDiscount ?? 0
+  const displayPrice = hasDiscount
+    ? product?.priceAfterDiscount!
     : product?.price ?? 0;
 
-  const discountPct = hasDiscount && product
-    ? calcDiscountPct(product.price, product.priceAfterDiscount ?? 0)
+  const discountPct = hasDiscount
+    ? calcDiscountPct(product!.price, product!.priceAfterDiscount!)
     : 0;
 
   const wishlistedIds = useMemo(() => 
