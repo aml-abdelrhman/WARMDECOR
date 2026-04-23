@@ -60,23 +60,16 @@ export function ProductSwiper({
 
   // تحويل قائمة المفضلة إلى مصفوفة IDs للتحقق السريع
   const wishlistedIds = useMemo(
-    () =>
-      new Set(
-        wishlistData?.data?.map((item: any) => item.product?._id || item._id) ||
-          [],
-      ),
-    [wishlistData],
+    () => new Set(wishlistData?.data?.map((item: any) => item.product?._id || item._id) || []),
+    [wishlistData]
   );
 
   // تحويل قائمة السلة إلى مصفوفة IDs
   const cartIds = useMemo(
-    () =>
-      new Set(
-        cartData?.data?.products?.map((item: any) =>
-          typeof item.product === "string" ? item.product : item.product?._id,
-        ) || [],
-      ),
-    [cartData],
+    () => new Set(
+      cartData?.data?.products?.map((item: any) => typeof item.product === 'string' ? item.product : item.product?._id) || []
+    ),
+    [cartData]
   );
 
   if (!isLoading && products.length === 0) return null;
@@ -101,7 +94,7 @@ export function ProductSwiper({
               See All <ArrowRight className="w-4 h-4" />
             </Link>
           )}
-
+          
           {/* Custom Arrows */}
           <div className="flex gap-2">
             <button
@@ -122,21 +115,21 @@ export function ProductSwiper({
 
       {/* Swiper Container */}
       <div className="relative group">
-        <Swiper
-          modules={[Navigation, Autoplay]}
-          spaceBetween={20}
-          slidesPerView={1.2}
-          navigation={{
-            // نترك هذه فارغة لأننا نعتمد على الـ refs بالأسفل
-            prevEl: prevRef.current,
-            nextEl: nextRef.current,
-          }}
-          onBeforeInit={(swiper) => {
-            // @ts-expect-error - ربط المراجع بالأزرار عند بدء التشغيل
-            swiper.params.navigation.prevEl = prevRef.current;
-            // @ts-expect-error - ربط المراجع بالأزرار عند بدء التشغيل
-            swiper.params.navigation.nextEl = nextRef.current;
-          }}
+       <Swiper
+  modules={[Navigation, Autoplay]}
+  spaceBetween={20}
+  slidesPerView={1.2}
+  navigation={{
+    // نترك هذه فارغة لأننا نعتمد على الـ refs بالأسفل
+    prevEl: prevRef.current,
+    nextEl: nextRef.current,
+  }}
+  onBeforeInit={(swiper) => {
+    // @ts-expect-error - ربط المراجع بالأزرار عند بدء التشغيل
+    swiper.params.navigation.prevEl = prevRef.current;
+    // @ts-expect-error - ربط المراجع بالأزرار عند بدء التشغيل
+    swiper.params.navigation.nextEl = nextRef.current;
+  }}
           breakpoints={{
             640: { slidesPerView: 2.2 },
             1024: { slidesPerView: slidesPerView },
@@ -160,7 +153,7 @@ export function ProductSwiper({
             : products.map((product) => (
                 <SwiperSlide key={product._id}>
                   <div className="transition-transform duration-500 hover:-translate-y-2">
-                    <ProductCard
+                    <ProductCard 
                       product={product}
                       onAddToCart={() => {
                         if (!isAuthenticated) {
@@ -189,7 +182,7 @@ export function ProductSwiper({
                 </SwiperSlide>
               ))}
         </Swiper>
-
+        
         {/* Subtle Gradient Overlays for "Soft" feel */}
         <div className="absolute top-0 -left-4 w-20 h-full bg-gradient-to-r from-[#F9F5F0] to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="absolute top-0 -right-4 w-20 h-full bg-gradient-to-l from-[#F9F5F0] to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
