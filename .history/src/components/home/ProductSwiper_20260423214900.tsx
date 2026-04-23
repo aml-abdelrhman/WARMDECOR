@@ -58,10 +58,12 @@ export function ProductSwiper({
     enabled: isAuthenticated,
   });
 
+  // تم استبدال any بـ السطر التالي لتعريف العناصر القادمة من المفضلة
   // تحويل قائمة المفضلة إلى مصفوفة IDs للتحقق السريع
   const wishlistedIds = useMemo(
     () =>
       new Set(
+        wishlistData?.data?.map((item: { product?: Product; _id: string }) => item.product?._id || item._id) ||
         wishlistData?.data?.map(
           (item: { product?: Product; _id: string }) => item.product?._id || item._id
         ) ||
@@ -70,10 +72,12 @@ export function ProductSwiper({
     [wishlistData],
   );
 
+  // تم استبدال any بالتعامل مع السلة بشكل آمن
   // تحويل قائمة السلة إلى مصفوفة IDs
   const cartIds = useMemo(
     () =>
       new Set(
+        cartData?.data?.products?.map((item: { product: Product | string }) => 
         cartData?.data?.products?.map((item: { product: string | Product }) =>
           typeof item.product === "string" ? item.product : item.product?._id
         ) || [],
@@ -134,8 +138,10 @@ export function ProductSwiper({
             nextEl: nextRef.current,
           }}
           onBeforeInit={(swiper) => {
+            // @ts-ignore - نستخدم ts-ignore هنا لأن swiper params داخلية
             // @ts-expect-error - ربط المراجع بالأزرار عند بدء التشغيل
             swiper.params.navigation.prevEl = prevRef.current;
+            // @ts-ignore
             // @ts-expect-error - ربط المراجع بالأزرار عند بدء التشغيل
             swiper.params.navigation.nextEl = nextRef.current;
           }}

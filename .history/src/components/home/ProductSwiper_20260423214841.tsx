@@ -41,40 +41,35 @@ export function ProductSwiper({
   const user = useAuthStore((s) => s.user);
   const isAuthenticated = !!user;
 
-  // استدعاء الـ Hook الخاص بالعمليات (Cart & Wishlist)
   const { addToCart, toggleWishlist } = useProductActions();
 
-  // جلب بيانات المفضلة إذا كان المستخدم مسجل دخوله
   const { data: wishlistData } = useQuery({
     queryKey: ["wishlist"],
     queryFn: getWishlistApi,
     enabled: isAuthenticated,
   });
 
-  // جلب بيانات السلة للتحقق من وجود المنتج مسبقاً
   const { data: cartData } = useQuery({
     queryKey: ["cart"],
     queryFn: getCartApi,
     enabled: isAuthenticated,
   });
 
-  // تحويل قائمة المفضلة إلى مصفوفة IDs للتحقق السريع
+  // تم استبدال any بـ السطر التالي لتعريف العناصر القادمة من المفضلة
   const wishlistedIds = useMemo(
     () =>
       new Set(
-        wishlistData?.data?.map(
-          (item: { product?: Product; _id: string }) => item.product?._id || item._id
-        ) ||
+        wishlistData?.data?.map((item: { product?: Product; _id: string }) => item.product?._id || item._id) ||
           [],
       ),
     [wishlistData],
   );
 
-  // تحويل قائمة السلة إلى مصفوفة IDs
+  // تم استبدال any بالتعامل مع السلة بشكل آمن
   const cartIds = useMemo(
     () =>
       new Set(
-        cartData?.data?.products?.map((item: { product: string | Product }) =>
+        cartData?.data?.products?.map((item: { product: Product | string }) => 
           typeof item.product === "string" ? item.product : item.product?._id
         ) || [],
       ),
@@ -85,7 +80,6 @@ export function ProductSwiper({
 
   return (
     <section className="relative py-4 animate-fade-in">
-      {/* Header with Navigation */}
       <div className="flex items-end justify-between mb-8">
         <div>
           <h2 className="font-display text-3xl md:text-4xl font-bold text-[#5C3D23] tracking-tight">
@@ -104,7 +98,6 @@ export function ProductSwiper({
             </Link>
           )}
 
-          {/* Custom Arrows */}
           <div className="flex gap-2">
             <button
               ref={prevRef}
@@ -122,21 +115,19 @@ export function ProductSwiper({
         </div>
       </div>
 
-      {/* Swiper Container */}
       <div className="relative group">
         <Swiper
           modules={[Navigation, Autoplay]}
           spaceBetween={20}
           slidesPerView={1.2}
           navigation={{
-            // نترك هذه فارغة لأننا نعتمد على الـ refs بالأسفل
             prevEl: prevRef.current,
             nextEl: nextRef.current,
           }}
           onBeforeInit={(swiper) => {
-            // @ts-expect-error - ربط المراجع بالأزرار عند بدء التشغيل
+            // @ts-ignore - نستخدم ts-ignore هنا لأن swiper params داخلية
             swiper.params.navigation.prevEl = prevRef.current;
-            // @ts-expect-error - ربط المراجع بالأزرار عند بدء التشغيل
+            // @ts-ignore
             swiper.params.navigation.nextEl = nextRef.current;
           }}
           breakpoints={{
@@ -192,12 +183,10 @@ export function ProductSwiper({
               ))}
         </Swiper>
 
-        {/* Subtle Gradient Overlays for "Soft" feel */}
         <div className="absolute top-0 -left-4 w-20 h-full bg-gradient-to-r from-[#F9F5F0] to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="absolute top-0 -right-4 w-20 h-full bg-gradient-to-l from-[#F9F5F0] to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
 
-      {/* Mobile-only See All */}
       {href && (
         <Link
           href={href}
