@@ -1,4 +1,6 @@
 "use client";
+import React from "react";
+import { useRef } from "react";
 import React, { useRef, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -152,6 +154,7 @@ export function ProductSwiper({
             : products.map((product) => (
                 <SwiperSlide key={product._id}>
                   <div className="transition-transform duration-500 hover:-translate-y-2">
+                    <ProductCard product={product} />
                     <ProductCard 
                       product={product}
                       onAddToCart={() => {

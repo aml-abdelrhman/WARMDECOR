@@ -1,17 +1,11 @@
 "use client";
-import React, { useRef, useMemo } from "react";
+import React from "react";
+import { useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import toast from "react-hot-toast";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import ProductCard from "@/components/ui/ProductCard";
-import { useProductActions } from "@/hooks/use-product-actions";
-import { useAuthStore } from "@/store/auth.store";
-import { getWishlistApi, getCartApi } from "@/features/cart/cart.api";
-import { ROUTES } from "@/constants/app";
 import type { Product } from "@/types";
 
 // Swiper Styles
@@ -25,6 +19,9 @@ interface ProductSwiperProps {
   products?: Product[];
   isLoading?: boolean;
   slidesPerView?: number;
+  onAddToCart?: (product: Product) => void;
+  onToggleWish?: (product: Product) => void;
+  wishlistedIds?: Set<string>;
 }
 
 export function ProductSwiper({
@@ -34,43 +31,12 @@ export function ProductSwiper({
   products = [],
   isLoading,
   slidesPerView = 4,
+  onAddToCart,
+  onToggleWish,
+  wishlistedIds,
 }: ProductSwiperProps) {
   const prevRef = useRef<HTMLButtonElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
-  const router = useRouter();
-  const user = useAuthStore((s) => s.user);
-  const isAuthenticated = !!user;
-
-  // استدعاء الـ Hook الخاص بالعمليات (Cart & Wishlist)
-  const { addToCart, toggleWishlist } = useProductActions();
-
-  // جلب بيانات المفضلة إذا كان المستخدم مسجل دخوله
-  const { data: wishlistData } = useQuery({
-    queryKey: ["wishlist"],
-    queryFn: getWishlistApi,
-    enabled: isAuthenticated,
-  });
-
-  // جلب بيانات السلة للتحقق من وجود المنتج مسبقاً
-  const { data: cartData } = useQuery({
-    queryKey: ["cart"],
-    queryFn: getCartApi,
-    enabled: isAuthenticated,
-  });
-
-  // تحويل قائمة المفضلة إلى مصفوفة IDs للتحقق السريع
-  const wishlistedIds = useMemo(
-    () => new Set(wishlistData?.data?.map((item: any) => item.product?._id || item._id) || []),
-    [wishlistData]
-  );
-
-  // تحويل قائمة السلة إلى مصفوفة IDs
-  const cartIds = useMemo(
-    () => new Set(
-      cartData?.data?.products?.map((item: any) => typeof item.product === 'string' ? item.product : item.product?._id) || []
-    ),
-    [cartData]
-  );
 
   if (!isLoading && products.length === 0) return null;
 
@@ -152,30 +118,12 @@ export function ProductSwiper({
             : products.map((product) => (
                 <SwiperSlide key={product._id}>
                   <div className="transition-transform duration-500 hover:-translate-y-2">
+                    <ProductCard product={product} />
                     <ProductCard 
-                      product={product}
-                      onAddToCart={() => {
-                        if (!isAuthenticated) {
-                          router.push(ROUTES.login);
-                          return;
-                        }
-                        if (cartIds.has(product._id)) {
-                          toast.error("Product is already in your cart!");
-                          return;
-                        }
-                        addToCart.mutate(product._id);
-                      }}
-                      onToggleWish={() => {
-                        if (!isAuthenticated) {
-                          router.push(ROUTES.login);
-                          return;
-                        }
-                        toggleWishlist.mutate({
-                          id: product._id,
-                          isWishlisted: wishlistedIds.has(product._id),
-                        });
-                      }}
-                      isWishlisted={wishlistedIds.has(product._id)}
+                      product={product} 
+                      onAddToCart={() => onAddToCart?.(product)}
+                      onToggleWish={() => onToggleWish?.(product)}
+                      isWishlisted={wishlistedIds?.has(product._id)}
                     />
                   </div>
                 </SwiperSlide>
