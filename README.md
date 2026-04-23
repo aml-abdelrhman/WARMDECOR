@@ -5,7 +5,7 @@
 ---
 
 ## 🔗 Live Demo
-[Explore WARMDECOR Live](https://warmdecor-zb41.vercel.app/)
+[Explore WARMDECOR Live](https://warmdecor-dk19.vercel.app/)
 
 ---
 
